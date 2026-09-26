@@ -62,4 +62,10 @@ public class InterviewController {
 
         return interviewService.getInterviewResult(id);
     }
+    @GetMapping("/user/{userId}")
+    public List<Interview> getInterviewsByUserId(
+            @PathVariable Integer userId) {
+
+        return interviewService.getInterviewsByUserId(userId);
+    }
 }	

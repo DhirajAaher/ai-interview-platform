@@ -1,4 +1,5 @@
-package com.dhiraj.ai_interview_platform.entity;	
+package com.dhiraj.ai_interview_platform.entity;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 @Entity
@@ -9,7 +10,7 @@ public class User {
 	private Integer userId;
 	private String name;
 	private String email;
-	//@JsonIgnore
+	@JsonIgnore
 	private String password;
 	public User() {
 		super();

@@ -17,6 +17,7 @@ public class AnswerService {
     private final QuestionRepository questionRepository;
     private final AIAnswerEvaluationService aiAnswerEvaluationService;
     private final InterviewService interviewService;
+
     public AnswerService(
             AnswerRepository answerRepository,
             QuestionRepository questionRepository,
@@ -62,6 +63,7 @@ public class AnswerService {
         return answerRepository.findByQuestionQuestionId(questionId);
     }
 
+    // Submit answer and evaluate using AI
     public Answer submitAnswer(SubmitAnswerRequest request) {
 
         Question question = questionRepository.findById(request.getQuestionId())
@@ -72,41 +74,66 @@ public class AnswerService {
         answer.setQuestion(question);
         answer.setAnswerText(request.getAnswerText());
 
-        // First save the answer
+        // Save answer first
         Answer savedAnswer = answerRepository.save(answer);
 
-        // Then evaluate using Gemini
+        // AI evaluation
         Answer evaluatedAnswer =
                 aiAnswerEvaluationService.evaluateAnswer(savedAnswer);
 
-        // Save score and feedback
-        return answerRepository.save(evaluatedAnswer);
+        Answer finalAnswer =
+                answerRepository.save(evaluatedAnswer);
+
+        // Check whether all questions are answered
+        Integer interviewId =
+                question.getInterview().getInterviewId();
+
+        List<Question> questions =
+                questionRepository.findByInterviewInterviewId(interviewId);
+
+        boolean allAnswered = true;
+
+        for (Question q : questions) {
+
+            List<Answer> answers =
+                    answerRepository.findByQuestionQuestionId(
+                            q.getQuestionId());
+
+            if (answers.isEmpty()) {
+                allAnswered = false;
+                break;
+            }
+        }
+
+        // Mark interview as completed
+        if (allAnswered) {
+            interviewService.completeInterview(interviewId);
+        }
+
+        return finalAnswer;
     }
-    public Answer evaluateAnswer(
-            Integer answerId,
-            AIAnswerEvaluationService evaluationService) {
 
-        Answer answer = answerRepository.findById(answerId)
-                .orElseThrow(() -> new RuntimeException("Answer not found"));
-
-        Answer evaluatedAnswer = evaluationService.evaluateAnswer(answer);
-
-        return answerRepository.save(evaluatedAnswer);
-    }
+    // Evaluate an existing answer
     public Answer evaluateAnswer(Integer answerId) {
 
         Answer answer = answerRepository.findById(answerId)
                 .orElseThrow(() -> new RuntimeException("Answer not found"));
 
+        // Evaluate answer using AI
         Answer evaluatedAnswer =
-                aiAnswerEvaluationService.evaluateAnswer(savedAnswer);
+                aiAnswerEvaluationService.evaluateAnswer(answer);
 
-        Answer finalAnswer = answerRepository.save(evaluatedAnswer);
+        // Save score and feedback
+        Answer finalAnswer =
+                answerRepository.save(evaluatedAnswer);
 
-        // Check whether all questions of this interview are answered
+        // Get interview through question
+        Question question = answer.getQuestion();
+
         Integer interviewId =
                 question.getInterview().getInterviewId();
 
+        // Get all questions of this interview
         List<Question> questions =
                 questionRepository.findByInterviewInterviewId(interviewId);
 

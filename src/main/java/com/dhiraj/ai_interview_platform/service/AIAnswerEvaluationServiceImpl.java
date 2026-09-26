@@ -45,7 +45,17 @@ public class AIAnswerEvaluationServiceImpl
                         line.substring("SCORE:".length()).trim();
 
                 try {
-                    return Integer.parseInt(scoreText);
+                    int score = Integer.parseInt(scoreText);
+
+                    // Gemini now returns a score from 0 to 10
+                    if (score < 0 || score > 10) {
+                        throw new RuntimeException(
+                                "Score must be between 0 and 10"
+                        );
+                    }
+
+                    return score;
+
                 } catch (NumberFormatException e) {
                     throw new RuntimeException(
                             "Invalid score returned by Gemini"

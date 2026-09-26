@@ -82,6 +82,12 @@ public class InterviewService {
 
         return interviewRepository.findAll();
     }
+ // Get Interview History For User
+    public List<Interview> getInterviewsByUserId(Integer userId) {
+
+        return interviewRepository
+                .findByUserUserIdOrderByCreatedAtDesc(userId);
+    }
 
     // Get Interview By ID
     public Optional<Interview> getInterviewById(Integer id) {
