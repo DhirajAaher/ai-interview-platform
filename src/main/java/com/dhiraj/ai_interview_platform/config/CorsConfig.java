@@ -13,10 +13,7 @@ public class CorsConfig implements WebMvcConfigurer {
         registry.addMapping("/**")
                 .allowedOrigins(
                         "http://localhost:5173",
-                        "http://localhost:5174",
-                        "http://localhost:5175",
-                        "http://localhost:5176",
-                        "http://localhost:3000"
+                        "https://ai-interview-frontend-jagb4z85m-dhirajaher532-7792.vercel.app"
                 )
                 .allowedMethods(
                         "GET",
@@ -26,6 +23,7 @@ public class CorsConfig implements WebMvcConfigurer {
                         "OPTIONS"
                 )
                 .allowedHeaders("*")
-                .allowCredentials(false);
+                .allowCredentials(false)
+                .maxAge(3600);
     }
 }
