@@ -13,7 +13,8 @@ public class CorsConfig implements WebMvcConfigurer {
         registry.addMapping("/**")
                 .allowedOrigins(
                         "http://localhost:5173",
-                        "https://ai-interview-frontend-jagb4z85m-dhirajaher532-7792.vercel.app"
+                        "https://ai-interview-frontend-jagb4z85m-dhirajaher532-7792.vercel.app",
+                        "https://ai-interview-frontend-inky.vercel.app"
                 )
                 .allowedMethods(
                         "GET",
