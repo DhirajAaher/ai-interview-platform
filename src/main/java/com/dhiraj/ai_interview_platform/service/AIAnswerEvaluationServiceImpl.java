@@ -26,57 +26,68 @@ public class AIAnswerEvaluationServiceImpl
             throw new RuntimeException("Gemini returned an empty response");
         }
 
-        Integer score = extractScore(result);
-        String feedback = extractFeedback(result);
+        System.out.println("Gemini Evaluation Result:");
+        System.out.println(result);
 
+        // Extract AI evaluation fields
+        Integer score = extractScore(result);
+        String feedback = extractField(result, "FEEDBACK:");
+        String improvedAnswer = extractField(result, "IMPROVED_ANSWER:");
+        String correctAnswer = extractField(result, "CORRECT_ANSWER:");
+        String explanation = extractField(result, "EXPLANATION:");
+        String keyPoints = extractField(result, "KEY_POINTS:");
+        String interviewTip = extractField(result, "INTERVIEW_TIP:");
+
+        // Set values in Answer entity
         answer.setScore(score);
         answer.setFeedback(feedback);
+        answer.setImprovedAnswer(improvedAnswer);
+        answer.setCorrectAnswer(correctAnswer);
+        answer.setExplanation(explanation);
+        answer.setKeyPoints(keyPoints);
+        answer.setInterviewTip(interviewTip);
 
         return answer;
     }
 
     private Integer extractScore(String result) {
 
-        for (String line : result.split("\\R")) {
+        String scoreText = extractField(result, "SCORE:");
 
-            if (line.trim().startsWith("SCORE:")) {
+        try {
 
-                String scoreText =
-                        line.substring("SCORE:".length()).trim();
+            int score = Integer.parseInt(scoreText.trim());
 
-                try {
-                    int score = Integer.parseInt(scoreText);
-
-                    // Gemini now returns a score from 0 to 10
-                    if (score < 0 || score > 10) {
-                        throw new RuntimeException(
-                                "Score must be between 0 and 10"
-                        );
-                    }
-
-                    return score;
-
-                } catch (NumberFormatException e) {
-                    throw new RuntimeException(
-                            "Invalid score returned by Gemini"
-                    );
-                }
+            if (score < 0 || score > 10) {
+                throw new RuntimeException(
+                        "Score must be between 0 and 10"
+                );
             }
-        }
 
-        throw new RuntimeException("Score not found in Gemini response");
+            return score;
+
+        } catch (NumberFormatException e) {
+
+            throw new RuntimeException(
+                    "Invalid score returned by Gemini: " + scoreText
+            );
+        }
     }
 
-    private String extractFeedback(String result) {
+    private String extractField(String result, String fieldName) {
 
         for (String line : result.split("\\R")) {
 
-            if (line.trim().startsWith("FEEDBACK:")) {
+            String trimmedLine = line.trim();
 
-                return line.substring("FEEDBACK:".length()).trim();
+            if (trimmedLine.startsWith(fieldName)) {
+
+                return trimmedLine
+                        .substring(fieldName.length())
+                        .trim();
             }
         }
 
-        return "No feedback generated.";
+        return "Not provided by AI.";
     }
 }

@@ -21,42 +21,72 @@ public class GeminiService {
 
     public String evaluateAnswer(String question, String answer) {
 
-        System.out.println("Calling Gemini...");
+        System.out.println("Calling Gemini for Answer Evaluation...");
+
+        String candidateAnswer =
+                (answer == null || answer.isBlank())
+                        ? "NO ANSWER PROVIDED"
+                        : answer;
 
         String prompt = """
-                You are an expert technical interviewer.
+                You are an expert technical interviewer and interview coach.
 
-                Evaluate the candidate's answer.
+                Your task is to evaluate a candidate's answer and teach the
+                candidate the correct concept.
 
-                Interview Question:
+                INTERVIEW QUESTION:
                 %s
 
-                Candidate Answer:
+                CANDIDATE ANSWER:
                 %s
 
-                Evaluate based on:
+                Evaluate the candidate based on:
                 1. Correctness
                 2. Relevance
                 3. Technical understanding
-                4. Clarity
+                4. Completeness
+                5. Clarity
 
-                Give a score from 0 to 10.
-
-                Scoring guide:
-                0 = Completely incorrect or no meaningful answer
+                SCORE RULES:
+                0 = No answer or completely incorrect
                 1-3 = Very poor understanding
-                4-5 = Partial understanding
+                4-5 = Partial understanding with major gaps
                 6-7 = Good understanding with some gaps
                 8-9 = Very good and mostly complete answer
-                10 = Fully correct, clear, and complete answer
+                10 = Fully correct, clear, complete and technically accurate
+
+                If the candidate did not provide an answer:
+                - Give SCORE: 0
+                - Clearly state that no answer was provided in FEEDBACK
+                - Provide the complete CORRECT_ANSWER
+                - Provide a useful EXPLANATION
+                - Provide KEY_POINTS
+                - Provide an INTERVIEW_TIP
+
+                If the candidate provided an answer:
+                - Evaluate the actual answer.
+                - Identify what is correct.
+                - Identify missing or incorrect information.
+                - Provide an improved interview-ready answer.
+                - Provide the complete correct answer.
+                - Explain the concept clearly.
+                - Give important key points.
+                - Give a practical interview tip.
 
                 IMPORTANT:
-                Return ONLY these two lines.
-                Do not add any other text.
+                Return ONLY the following fields.
+                Do not use Markdown.
+                Do not use bullets inside individual fields.
+                Keep each field on ONE line.
 
                 SCORE: <number from 0 to 10>
-                FEEDBACK: <short feedback>
-                """.formatted(question, answer);
+                FEEDBACK: <feedback about the candidate's answer>
+                IMPROVED_ANSWER: <corrected and interview-ready version of the candidate's answer>
+                CORRECT_ANSWER: <complete technically correct answer>
+                EXPLANATION: <clear explanation of the concept>
+                KEY_POINTS: <important points separated by |>
+                INTERVIEW_TIP: <short practical interview advice>
+                """.formatted(question, candidateAnswer);
 
         GenerateContentResponse response =
                 client.models.generateContent(
@@ -65,7 +95,7 @@ public class GeminiService {
                         null
                 );
 
-        System.out.println("Gemini response received.");
+        System.out.println("Gemini Answer Evaluation response received.");
 
         return response.text();
     }

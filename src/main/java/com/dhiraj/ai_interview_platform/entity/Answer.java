@@ -17,8 +17,22 @@ public class Answer {
 
     private Integer score;
 
-    @Column(length = 50)
+    @Column(columnDefinition = "TEXT")
     private String feedback;
+    @Column(columnDefinition = "TEXT")
+    private String improvedAnswer;
+
+    @Column(columnDefinition = "TEXT")
+    private String correctAnswer;
+
+    @Column(columnDefinition = "TEXT")
+    private String explanation;
+
+    @Column(columnDefinition = "TEXT")
+    private String keyPoints;
+
+    @Column(columnDefinition = "TEXT")
+    private String interviewTip;
 
     public Answer() {
     }
@@ -60,5 +74,44 @@ public class Answer {
 
     public void setAnswerText(String answerText) {
         this.answerText = answerText;
+    }
+    public String getImprovedAnswer() {
+        return improvedAnswer;
+    }
+
+    public void setImprovedAnswer(String improvedAnswer) {
+        this.improvedAnswer = improvedAnswer;
+    }
+
+    public String getCorrectAnswer() {
+        return correctAnswer;
+    }
+
+    public void setCorrectAnswer(String correctAnswer) {
+        this.correctAnswer = correctAnswer;
+    }
+
+    public String getExplanation() {
+        return explanation;
+    }
+
+    public void setExplanation(String explanation) {
+        this.explanation = explanation;
+    }
+
+    public String getKeyPoints() {
+        return keyPoints;
+    }
+
+    public void setKeyPoints(String keyPoints) {
+        this.keyPoints = keyPoints;
+    }
+
+    public String getInterviewTip() {
+        return interviewTip;
+    }
+
+    public void setInterviewTip(String interviewTip) {
+        this.interviewTip = interviewTip;
     }
 }
