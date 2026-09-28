@@ -68,4 +68,14 @@ public class InterviewController {
 
         return interviewService.getInterviewsByUserId(userId);
     }
+    
+    @PutMapping("/{id}/complete")
+    public ResponseEntity<Interview> completeInterview(
+            @PathVariable Integer id) {
+
+        Interview completedInterview =
+                interviewService.completeInterview(id);
+
+        return ResponseEntity.ok(completedInterview);
+    }
 }	
